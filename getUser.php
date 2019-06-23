@@ -1,27 +1,38 @@
 <?php
-//Archivo (getUser.php)
-header('Access-Control-Allow-Origin: *'); 
-header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+// Archivo (getUser.php)
 
-require("conexion.php"); // IMPORTA EL ARCHIVO CON LA CONEXION A LA DB
-$conexion = conexion(); // CREA LA CONEXION
+require 'conexion.php'; // IMPORTA EL ARCHIVO CON LA CONEXION A LA DB
+// $conexion = conexion(); // CREA LA CONEXION
 // REALIZA LA QUERY A LA DB
+$user = [];
 $sql = 'SELECT * FROM users WHERE uid=\''.$_GET["uid"].'\'';
-$registros = mysqli_query($conexion, $sql);
 
-// SI EL USUARIO EXISTE OBTIENE LOS DATOS Y LOS GUARDA EN UN ARRAY
-if ($registros)  
+if($result = mysqli_query($con,$sql))
 {
-    $resultado = mysqli_fetch_array($registros);
-    $datos = $resultado;
-    $json = json_encode($datos);
-} else {
-    $json = null;
-    echo mysqli_error($conexion);
+  $i = 0;
+  while($row = mysqli_fetch_assoc($result))
+  {
+    $user[$i]['user_id']    = $row['user_id'];
+    $user[$i]['uid'] = $row['uid'];
+    $user[$i]['user_name'] = $row['user_name'];
+    $user[$i]['userfullname'] = $row['userfullname'];
+    $user[$i]['usercedula'] = $row['usercedula'];
+    $user[$i]['useremail'] = $row['useremail'];
+    $user[$i]['useraddress'] = $row['useraddress'];
+    $user[$i]['userphone'] = $row['userphone'];
+    $user[$i]['userphone2'] = $row['userphone2'];
+    $user[$i]['userfacebook'] = $row['userfacebook'];
+    $user[$i]['userpassword'] = $row['userpassword'];
+    $user[$i]['created_at'] = $row['created_at'];
+    $i++;
+  }
+
+  echo json_encode($user);
 }
- // GENERA EL JSON CON LOS DATOS OBTENIDOS
-echo $json; // MUESTRA EL JSON GENERADO
+else
+{
+  http_response_code(404);
+}
 
-header('Content-Type: application/json; charset=UTF-8');
-
+header('Content-Type: application/json');
 ?>
